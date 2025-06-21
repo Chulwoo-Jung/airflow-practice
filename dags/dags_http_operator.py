@@ -12,7 +12,7 @@ with DAG(
 
     tb_bicycle_rent_use_day = HttpOperator(
         task_id='tb_bicycle_rent_use_day',
-        http_conn_id='openapi.seoul.go.kr',
+        http_conn_id='openapi.seoul.go.kr', # connection in Airflow UI
         endpoint='{{var.value.apikey_openapi_seoul_go_kr}}/json/tbCycleRentUseDay/1/10/20250101',
         method='GET',
         headers={'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ with DAG(
     @task(task_id='python_2')
     def python_2(**kwargs):
         ti = kwargs['ti']
-        rslt = ti.xcom_pull(task_ids='tb_cycle_station_info')
+        rslt = ti.xcom_pull(task_ids='tb_bicycle_rent_use_day')
         import json
         from pprint import pprint
 

@@ -29,4 +29,4 @@ with DAG(
         python_callable=lambda: print('task_c')
     )
     
-    get_random_task >> [task_a, task_b, task_c]
+    get_random_task() >> [task_a, task_b, task_c]

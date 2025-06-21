@@ -15,5 +15,3 @@ with DAG(
         subject = 'Airflow Email Test',
         html_content = 'Airflow Email Test'
     )
-
-    send_email_task

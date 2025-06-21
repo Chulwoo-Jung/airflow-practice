@@ -21,7 +21,7 @@ with DAG(
         subject = '{{ data_interval_end.in_timezone("Europe/Berlin") | ds }} : Lucky TEST!! : Will you be lucky today?',
         html_content = '{{ data_interval_end.in_timezone("Europe/Berlin") | ds }} , today <br> \
                         {{ ti.xcom_pull(key="return_value", task_ids="some_logic")}}, \
-                            <br> {{var.value.secert_message_to_Sumin}}<br>'
+                            <br> {{var.value.secret_message_to_Sumin}}<br>'
     )
 
     some_logic() >> send_email

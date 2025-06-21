@@ -2,3 +2,5 @@
 airflow_venv/
 config/
 logs/
+*/__pycache__/
+plugins/common/__pycache__/

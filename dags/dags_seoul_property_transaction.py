@@ -1,4 +1,4 @@
-from operator.seoul_api_to_csv_operator import SeoulApiToCsvOperator
+from plugins.operator.seoul_api_to_csv_operator import SeoulApiToCsvOperator
 import pendulum
 from airflow.sdk import DAG
 

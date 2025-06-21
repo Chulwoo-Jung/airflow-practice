@@ -1,4 +1,4 @@
-from plugins.operator.seoul_api_to_csv_operator import SeoulApiToCsvOperator
+from operator.seoul_api_to_csv_operator import SeoulApiToCsvOperator
 import pendulum
 from airflow.sdk import DAG
 
@@ -11,7 +11,7 @@ with DAG(
     seoul_property_transaction = SeoulApiToCsvOperator(
         task_id='seoul_property_transaction',
         dataset_nm='tbLnOpendataRtmsV',
-        path='./files/seoulPropertyTransaction/{{data_interval_end.in_timezone("Europe/Berlin") | ds_nodash }}',
+        path='/opt/airflow/files/seoulPropertyTransaction/{{data_interval_end.in_timezone("Europe/Berlin") | ds_nodash }}',
         file_name='seoulPropertyTransaction.csv'
     )
 

@@ -3,18 +3,18 @@ import pendulum
 from airflow.sdk import DAG
 
 with DAG(
-    dag_id='dags_seoul_property_transaction',
+    dag_id='dags_tvCorona19VaccinestatNew',
     schedule='0 7 * * *',
     start_date=pendulum.datetime(2025,6,1, tz='Europe/Berlin'),
     catchup=False
 ) as dag:
-    seoul_property_transaction = SeoulApiToCsvOperator(
-        task_id='seoul_property_transaction',
-        dataset_nm='tbLnOpendataRtmsV',
-        path='/opt/airflow/files/seoulPropertyTransaction/{{data_interval_end.in_timezone("Europe/Berlin") | ds_nodash }}',
-        file_name='seoulPropertyTransaction.csv'
+    tvCorona19VaccinestatNew = SeoulApiToCsvOperator(
+        task_id='tvCorona19VaccinestatNew',
+        dataset_nm='tvCorona19VaccinestatNew',
+        path='/opt/airflow/files/tvCorona19VaccinestatNew/{{data_interval_end.in_timezone("Europe/Berlin") | ds_nodash }}',
+        file_name='tvCorona19VaccinestatNew.csv'
     )
 
-    seoul_property_transaction
+    tvCorona19VaccinestatNew
     
   

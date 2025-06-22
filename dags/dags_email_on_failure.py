@@ -1,7 +1,7 @@
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.exceptions import AirflowException
 import pendulum
-from datetime import timedelta
+from datetime import timedelta, relativedelta
 from airflow.sdk import DAG, task, Variable
 
 email_str = Variable.get("email_target")
@@ -26,9 +26,11 @@ with DAG(
     bash_fail = BashOperator(
         task_id='bash_fail',
         bash_command='exit 1',
+        execution_timeout=timedelta(seconds=10)
     )
 
     bash_success = BashOperator(
         task_id='bash_success',
         bash_command='exit 0',
+        execution_timeout=timedelta(seconds=10)
     )

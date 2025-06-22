@@ -6,6 +6,9 @@
       <li><b>Task:</b> {{ ti.task_id }}</li>
       <li><b>Execution Date:</b> {{ ts }}</li>
       <li><b>Error Log:</b> {{ exception }}</li>
+      {% if ti.log_url %}
+      <li><b>Log URL:</b> <a href="{{ ti.log_url }}">View Logs</a></li>
+      {% endif %}
     </ul>
   </body>
 </html>

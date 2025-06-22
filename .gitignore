@@ -5,3 +5,4 @@ logs/
 */__pycache__/
 plugins/common/__pycache__/
 plugins/operator/__pycache__/
+plugins/sensors/__pycache__/

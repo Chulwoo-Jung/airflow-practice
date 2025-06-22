@@ -1,7 +1,7 @@
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.exceptions import AirflowException
 import pendulum
-from datetime import timedelta, relativedelta
+from datetime import timedelta
 from airflow.sdk import DAG, task, Variable
 
 email_str = Variable.get("email_target")

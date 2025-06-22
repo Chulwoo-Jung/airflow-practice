@@ -2,9 +2,9 @@ from airflow.providers.standard.operators.bash import BashOperator
 from airflow.exceptions import AirflowException
 import pendulum
 from datetime import timedelta
-from airflow.sdk import DAG, task
+from airflow.sdk import DAG, task, Variable
 
-email_str = '{{var.value.email_target}}'
+email_str = Variable.get("email_target")
 email_lst = [email.strip() for email in email_str.split(',')]
 
 with DAG(

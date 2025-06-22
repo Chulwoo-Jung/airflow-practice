@@ -17,6 +17,7 @@ with DAG(
 
     send_email = EmailOperator(
         task_id = 'send_email',
+        conn_id = 'conn_smtp_gmail',
         to = '{{var.value.sumin_email}}',
         subject = '{{ data_interval_end.in_timezone("Europe/Berlin") | ds }} : Lucky TEST!! : Will you be lucky today?',
         html_content = '{{ data_interval_end.in_timezone("Europe/Berlin") | ds }} , today <br> \

@@ -15,7 +15,7 @@ with DAG(
         task_id='external_task_sensor_a',
         external_dag_id='dags_branch_python_operator',
         external_task_id='task_a',
-        allowed_states=[State.SKIPPED], # If the task_a is skipped, then this task will be successful
+        allowed_states=[State.SKIPPED], # If the task_a is skipped, then this task will be SUCCESS
         execution_delta=timedelta(hours=6),
         poke_interval=10        #10 seconds
     )
@@ -24,7 +24,7 @@ with DAG(
         task_id='external_task_sensor_b',
         external_dag_id='dags_branch_python_operator',
         external_task_id='task_b',
-        failed_states=[State.SKIPPED], # If the task_b is skipped, then this task will be failed
+        failed_states=[State.SKIPPED], # If the task_b is skipped, then this task will be SUCCESS
         execution_delta=timedelta(hours=6),
         poke_interval=10        #10 seconds
     )
@@ -33,7 +33,7 @@ with DAG(
         task_id='external_task_sensor_c',
         external_dag_id='dags_branch_python_operator',
         external_task_id='task_c',
-        allowed_states=[State.SUCCESS], # If the task_c is successful, then this task will be successful
+        allowed_states=[State.SUCCESS], # If the task_c is successful, then this task will be SUCCESS
         execution_delta=timedelta(hours=6),
         poke_interval=10        #10 seconds
     )

@@ -65,6 +65,8 @@ x-airflow-common:
     AIRFLOW__EMAIL__EMAIL_CONN_ID: 'conn_smtp_gmail'
     AIRFLOW__SMTP__SMTP_HOST: 'smtp.gmail.com'
     AIRFLOW__SMTP__SMTP__PORT: 587
+    AIRFLOW__EMAIL__SUBJECT_TEMPLATE: 'opt/airflow/templates/task_failure_subject_template.txt'
+    AIRFLOW__EMAIL__HTML_CONTENT_TEMPLATE: 'opt/airflow/templates/task_failure_html_template.html'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
@@ -75,12 +77,14 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     # The following line can be used to set a custom config file, stored in the local config folder
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/files:/opt/airflow/files
+    - ${AIRFLOW_PROJ_DIR:-.}/templates:/opt/airflow/templates
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

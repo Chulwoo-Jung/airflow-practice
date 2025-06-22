@@ -1,0 +1,1 @@
+[Airflow Notification] {{ dag.dag_id }} - {{ ti.task_id }} Failure

@@ -9,7 +9,7 @@ def on_failure_callback_to_slack(context):
 
     slack_hook = SlackWebhookHook(slack_webhook_conn_id='conn_slack_airflow_bot')
     text = "Failure Alert"
-    blocks = [  # Using Slack Block Builder to format the message
+    blocks = [  # Using Slack Block Kit Builder to format the message
         {
 			"type": "section",
 			"text": {

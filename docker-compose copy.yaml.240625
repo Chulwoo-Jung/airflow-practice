@@ -94,26 +94,6 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-  postgres-custom:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-      TZ: Europe/Berlin
-    volumes:
-      - postgres-custom-db-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-    ports:
-      - "5430:5432"
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.2
-
   postgres:
     image: postgres:13
     environment:
@@ -128,11 +108,6 @@ services:
       retries: 5
       start_period: 5s
     restart: always
-    ports:
-      - "5431:5432"
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.3
 
   redis:
     # Redis is limited to 7.2-bookworm due to licencing change
@@ -147,9 +122,6 @@ services:
       retries: 50
       start_period: 30s
     restart: always
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.4
 
   airflow-apiserver:
     <<: *airflow-common
@@ -167,9 +139,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.5
 
   airflow-scheduler:
     <<: *airflow-common
@@ -185,9 +154,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.6
 
   airflow-dag-processor:
     <<: *airflow-common
@@ -203,9 +169,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.7
 
   airflow-worker:
     <<: *airflow-common
@@ -231,9 +194,6 @@ services:
         condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.8
 
   airflow-triggerer:
     <<: *airflow-common
@@ -249,9 +209,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.9
 
   airflow-init:
     <<: *airflow-common
@@ -381,19 +338,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - network_custom:
-        ipv4_address: 172.28.0.10
 
 volumes:
   postgres-db-volume:
-  postgres-custom-db-volume:
-
-networks:
-  network_custom:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/16
-          gateway: 172.28.0.1

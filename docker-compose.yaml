@@ -111,7 +111,7 @@ services:
     ports:
       - "5430:5432"
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.2
 
   postgres:
@@ -131,7 +131,7 @@ services:
     ports:
       - "5431:5432"
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.3
 
   redis:
@@ -148,7 +148,7 @@ services:
       start_period: 30s
     restart: always
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.4
 
   airflow-apiserver:
@@ -168,7 +168,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.5
 
   airflow-scheduler:
@@ -186,7 +186,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.6
 
   airflow-dag-processor:
@@ -204,7 +204,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.7
 
   airflow-worker:
@@ -232,7 +232,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.8
 
   airflow-triggerer:
@@ -250,7 +250,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.9
 
   airflow-init:
@@ -382,7 +382,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
-      - network_custom:
+      network_custom:
         ipv4_address: 172.28.0.10
 
 volumes:

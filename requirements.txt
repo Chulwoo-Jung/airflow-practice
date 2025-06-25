@@ -2,3 +2,4 @@ langchain-openai>=0.3.25
 langchain-core>=0.3.66
 openai>=1.91.0 
 yfinance>=0.2.63
+langchain>=0.3.26

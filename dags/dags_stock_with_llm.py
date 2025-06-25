@@ -10,14 +10,14 @@ with DAG(
     tags=['stock', 'llm']
 ) as dag:
 
-    @task(task_id='get_m7_stock_df', retries=3)
+    @task(task_id='get_m7_stock_df')
     def get_m7_stock_df():
         from practical.get_stock_df import get_m7_stock_df
         df = get_m7_stock_df()
         # Convert DataFrame to JSON
         return df.to_json(orient='records', date_format='iso')
     
-    @task(task_id='get_output_from_llm', retries=3)
+    @task(task_id='get_output_from_llm')
     def get_output_from_llm(**kwargs):
         import json
         import pandas as pd
@@ -28,6 +28,8 @@ with DAG(
         
         import langchain_openai
         from langchain_core.output_parsers import StrOutputParser
+        from langchain_core.prompts import PromptTemplate
+        from langchain.chains import LLMChain
         from airflow.models import Variable
         openai_api_key = Variable.get("openai_api_key")
         
@@ -41,7 +43,9 @@ with DAG(
         # Convert DataFrame to HTML table
         stock_df_html = stock_df.to_html(index=False, classes='table table-striped')
         
-        prompt = ''' 
+        prompt = PromptTemplate(
+            input_variables=['stock_df_html'],
+            template=''' 
         {stock_df_html}
         
         이 데이터를 기반으로 주식에 관한 메일을 보내는 글을 만들어주세요.
@@ -72,6 +76,12 @@ with DAG(
         </ul>
         
         <h3>3. Google (GOOGL)</h3>
+        <p>구글의 주가 형성의 이유</p>
+        <ul>
+        <li>주가와 관련한 뉴스 1</li>
+        <li>주가와 관련한 뉴스 2</li>
+        <li>주가와 관련한 뉴스 3</li>
+        </ul>
         
         ... (반복)
         
@@ -84,12 +94,13 @@ with DAG(
         <li>주요 뉴스 5</li>
         </ul>
         '''
+        )
 
-        llm_chain = prompt | llm | parser
-        response = llm_chain.invoke(stock_df_html)
+        llm_chain = LLMChain(llm=llm, prompt=prompt, output_parser=parser)
+        response = llm_chain.invoke({"stock_df_html": stock_df_html})
         return response
     
-    @task(task_id='send_email', retries=3)
+    @task(task_id='send_email')
     def send_email(**kwargs):
         from airflow.providers.smtp.operators.smtp import EmailOperator        
         response = kwargs['ti'].xcom_pull(key='return_value', task_ids='get_output_from_llm')

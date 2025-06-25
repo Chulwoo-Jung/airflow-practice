@@ -1,6 +1,7 @@
 from airflow.sdk import DAG, task
 import pendulum
 from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
 
 with DAG(
     dag_id='dags_python_with_langchain',

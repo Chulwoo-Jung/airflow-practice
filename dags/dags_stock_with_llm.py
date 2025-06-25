@@ -4,7 +4,7 @@ import pendulum
 
 with DAG(
     dag_id='dags_stock_with_llm',
-    schedule_interval='* 8 * * 5',
+    schedule='* 8 * * 5',
     start_date=pendulum.datetime(2025, 6, 25, tz='Europe/Berlin'),
     catchup=False,
     tags=['stock', 'llm']
@@ -12,46 +12,81 @@ with DAG(
 
     @task(task_id='get_m7_stock_df', retries=3)
     def get_m7_stock_df():
-        return get_m7_stock_df()
+        from practical.get_stock_df import get_m7_stock_df
+        df = get_m7_stock_df()
+        # Convert DataFrame to JSON
+        return df.to_json(orient='records', date_format='iso')
     
     @task(task_id='get_output_from_llm', retries=3)
     def get_output_from_llm(**kwargs):
-        stock_df = kwargs['ti'].xcom_pull(task_ids='get_m7_stock_df')
+        import json
+        import pandas as pd
+        
+        # Convert JSON to DataFrame
+        stock_df_json = kwargs['ti'].xcom_pull(task_ids='get_m7_stock_df')
+        stock_df = pd.read_json(stock_df_json, orient='records')
         
         import langchain_openai
         from langchain_core.output_parsers import StrOutputParser
-
-        llm = langchain_openai.ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+        from airflow.models import Variable
+        openai_api_key = Variable.get("openai_api_key")
+        
+        llm = langchain_openai.ChatOpenAI(
+            api_key=openai_api_key,
+            model="gpt-4o-mini", 
+            temperature=0.2
+        )
         parser = StrOutputParser()
         
-        prompt = ''' 
-        {stock_df}는 5일간 미국 nasdaq의 magnificant 7의 주식표야.
-        저걸 기반으로 7일에 한번 주식에 관한 메일을 보내는 글을 만들어줘.
-        각 회사마다 꼭 봐야했던 주요한 issuse들을 같이 넣고, 
-        마지막에는 한주간 꼭 챙겨봐야할 뉴스 소식(중복되지 않게, 주요 경제소식)을 넣을거야.
-        모든 글을 최종적으로 *꼭 html 형식*으로 만들어줘.
-        예시)
+        # Convert DataFrame to HTML table
+        stock_df_html = stock_df.to_html(index=False, classes='table table-striped')
         
-        {stock_df}  (우선 표를 보여줘 그리고 인사말과 함께 이번주는 어떤 소식을 주목해야할지 먼저 알려줘)
-
-        1. Apple
-        {애플의 주가 형성의 이유}
-        - {주가와 관련한 뉴스 1}
-        - {주가와 관련한 뉴스 2}
-        - {주가와 관련한 뉴스 3}
-
-        2. 
-
-        3.
-
-        {반복}
-
-        ** 이번주 주요 뉴스
-        {주요 뉴스 5개 정도 나열}
+        prompt = ''' 
+        {stock_df_html}
+        
+        이 데이터를 기반으로 주식에 관한 메일을 보내는 글을 만들어주세요.
+        우선 {stock_df_html}를 보여주고, 그 다음에 인사말과 함께 이번주는 어떤 소식을 주목해야할지 먼저 알려주세요.
+        각 회사마다 꼭 봐야했던 주요한 이슈들을 같이 넣고, 
+        마지막에는 한주간 꼭 챙겨봐야할 뉴스 소식(중복되지 않게, 주요 경제소식)을 넣어주세요.
+        모든 글을 최종적으로 *꼭 html 형식*으로 만들어주세요.
+        
+        예시 형식:
+        
+        <h2>이번주 주목해야 할 소식</h2>
+        <p>인사말과 함께 이번주는 어떤 소식을 주목해야할지 먼저 알려주세요.</p>
+        
+        <h3>1. Apple (AAPL)</h3>
+        <p>애플의 주가 형성의 이유</p>
+        <ul>
+        <li>주가와 관련한 뉴스 1</li>
+        <li>주가와 관련한 뉴스 2</li>
+        <li>주가와 관련한 뉴스 3</li>
+        </ul>
+        
+        <h3>2. Microsoft (MSFT)</h3>
+        <p>마이크로소프트의 주가 형성의 이유</p>
+        <ul>
+        <li>주가와 관련한 뉴스 1</li>
+        <li>주가와 관련한 뉴스 2</li>
+        <li>주가와 관련한 뉴스 3</li>
+        </ul>
+        
+        <h3>3. Google (GOOGL)</h3>
+        
+        ... (반복)
+        
+        <h2>이번주 주요 뉴스</h2>
+        <ul>
+        <li>주요 뉴스 1</li>
+        <li>주요 뉴스 2</li>
+        <li>주요 뉴스 3</li>
+        <li>주요 뉴스 4</li>
+        <li>주요 뉴스 5</li>
+        </ul>
         '''
 
         llm_chain = prompt | llm | parser
-        response = llm_chain.invoke(stock_df)
+        response = llm_chain.invoke(stock_df_html)
         return response
     
     @task(task_id='send_email', retries=3)

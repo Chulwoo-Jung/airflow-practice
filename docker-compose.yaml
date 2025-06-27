@@ -67,6 +67,21 @@ x-airflow-common:
     AIRFLOW__SMTP__SMTP__PORT: 587
     AIRFLOW__EMAIL__SUBJECT_TEMPLATE: 'opt/airflow/templates/task_failure_subject_template.txt'
     AIRFLOW__EMAIL__HTML_CONTENT_TEMPLATE: 'opt/airflow/templates/task_failure_html_template.html'
+    AIRFLOW__CORE__DAG_PROCESSOR_MANAGER: '[
+{
+    "name": "second-dags",
+    "classpath": "airflow.dag_processing.bundles.local.LocalDagBundle",
+    "kwargs": {
+        "path": "/opt/airflow/second_dags"
+    }
+},
+{
+    "name": "dags-folder",
+    "classpath": "airflow.dag_processing.bundles.local.LocalDagBundle",
+    "kwargs": {
+        "path": "/opt/airflow/dags"
+    }
+}]'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
@@ -85,6 +100,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/files:/opt/airflow/files
     - ${AIRFLOW_PROJ_DIR:-.}/templates:/opt/airflow/templates
+    - ${AIRFLOW_PROJ_DIR:-.}/second_dags:/opt/airflow/second_dags
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

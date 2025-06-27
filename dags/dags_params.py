@@ -54,8 +54,7 @@ with DAG(
         print(f'from_date: {from_date}, to_date:{to_date} / Execute SQL.')
         return [(from_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range((to_date - from_date).days + 1)]
 
-    @task(task_id='task_run_from_to',
-          map_index_template="{{ target_date }}")
+    @task(task_id='task_run_from_to', map_index_template="{{ target_date }}")
     def task_run_from_to(target_date):
         context = get_current_context()
         context["target_date"] = target_date
